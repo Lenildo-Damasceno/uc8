@@ -36,7 +36,7 @@ export default function AddTarefa({ aoSalvar, aoVoltar }) {
   }
 
   // Cria o objeto simples da tarefa e envia para a página principal.
-  function salvar() {
+  function salvar(navigation) {
     if (!nome.trim()) {
       Alert.alert('Campo obrigatório', 'Digite o nome da tarefa.');
       return;
