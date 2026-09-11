@@ -1,7 +1,10 @@
 import { StyleSheet, Text } from 'react-native';
+import useAuth from '../context/authContext';
 
-export default function BemVindo({ usuario }) {
-  return <Text style={styles.titulo}>Bem-vindo, {usuario}!</Text>;
+export default function BemVindo() {
+  const { user } = useAuth();
+
+  return <Text style={styles.titulo}>Bem-vindo, {user?.nome}!</Text>;
 }
 
 const styles = StyleSheet.create({

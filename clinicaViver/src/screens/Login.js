@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import { Alert, Button, Text, TextInput, View } from 'react-native';
+import useAuth from '../context/authContext';
 
-export default function Login({ navigation, onEntrar }) {
+export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const { entrar: autenticar } = useAuth();
 
-  function entrar() {
+  async function entrar() {
     if (!email.trim() || !senha) {
       Alert.alert('Atenção', 'Preencha o e-mail e a senha.');
       return;
     }
 
-    onEntrar(email.trim());
-    navigation.replace('Abas');
+    try {
+      await autenticar(email, senha);
+    } catch (erro) {
+      Alert.alert('Não foi possível entrar', erro.message);
+    }
   }
 
   return (
@@ -24,6 +29,9 @@ export default function Login({ navigation, onEntrar }) {
       <Text>Senha</Text>
       <TextInput placeholder="Digite sua senha" value={senha} onChangeText={setSenha} secureTextEntry />
       <Button title="Entrar" onPress={entrar} />
+      <Button title="Cadastre-se" onPress={() => navigation.navigate('Cadastro')} />
+
+        cadatra-se 
     </View>
   );
 }

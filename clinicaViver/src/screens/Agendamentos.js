@@ -5,7 +5,7 @@ export default function Agendamentos({ navigation, agendamentos }) {
   return (
     <View>
       <Text>Meus agendamentos</Text>
-      {agendamentos.length === 0 && <Text>Nenhum agendamento realizado.</Text>}
+      {agendamentos.length === 0 && <Text>Nenhum agendamento realizado.</Text>} 
       {agendamentos.map((agendamento, indice) => (
         <View key={`${agendamento.data}-${agendamento.hora}-${indice}`}>
           <Text>Consulta {indice + 1}</Text>

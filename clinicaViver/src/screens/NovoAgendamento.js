@@ -1,18 +1,43 @@
 import { useState } from 'react';
-import { Alert, Button, Text, TextInput, View } from 'react-native';
+import { Alert, Button, Platform, Text, View } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function NovoAgendamento({ navigation }) {
   const [especialidade, setEspecialidade] = useState('');
   const [medico, setMedico] = useState('');
-  const [data, setData] = useState('');
-  const [hora, setHora] = useState('');
+  const [data, setData] = useState(null);
+  const [hora, setHora] = useState(null);
+  const [seletorAberto, setSeletorAberto] = useState(null);
+
+  const dataFormatada = data?.toLocaleDateString('pt-BR') ?? '';
+  const horaFormatada = hora?.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }) ?? '';
+
+  function alterarDataHora(event, valorSelecionado) {
+    if (Platform.OS === 'android') setSeletorAberto(null);
+    if (event.type === 'dismissed' || !valorSelecionado) return;
+
+    if (seletorAberto === 'date') {
+      setData(valorSelecionado);
+    } else {
+      setHora(valorSelecionado);
+    }
+  }
 
   function avancar() {
     if (!especialidade || !medico || !data || !hora) {
       Alert.alert('Atenção', 'Preencha todos os dados do agendamento.');
       return;
     }
-    navigation.navigate('Confirmacao', { especialidade, medico, data, hora });
+
+    navigation.navigate('Confirmacao', {
+      especialidade,
+      medico,
+      data: dataFormatada,
+      hora: horaFormatada,
+    });
   }
 
   return (
@@ -30,9 +55,26 @@ export default function NovoAgendamento({ navigation }) {
       <Text>Selecionado: {medico || 'nenhum'}</Text>
 
       <Text>Data</Text>
-      <TextInput placeholder="Exemplo: 15/09/2026" value={data} onChangeText={setData} />
+      <Button title={dataFormatada || 'Selecionar data'} onPress={() => setSeletorAberto('date')} />
+
       <Text>Hora</Text>
-      <TextInput placeholder="Exemplo: 14:30" value={hora} onChangeText={setHora} />
+      <Button title={horaFormatada || 'Selecionar hora'} onPress={() => setSeletorAberto('time')} />
+
+      {seletorAberto && (
+        <DateTimePicker
+          value={(seletorAberto === 'date' ? data : hora) ?? new Date()}
+          mode={seletorAberto}
+          display="default"
+          minimumDate={seletorAberto === 'date' ? new Date() : undefined}
+          is24Hour
+          onChange={alterarDataHora}
+        />
+      )}
+
+      {seletorAberto && Platform.OS === 'ios' && (
+        <Button title="Concluir" onPress={() => setSeletorAberto(null)} />
+      )}
+
       <Button title="Avançar" onPress={avancar} />
     </View>
   );
