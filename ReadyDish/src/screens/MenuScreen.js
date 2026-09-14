@@ -1,25 +1,25 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import ProductCard from '../components/ProductCard';
-import { categories, products } from '../data/products';
+import CartaoProduto from '../components/ProductCard';
+import { categorias, produtos } from '../data/products';
 
-export default function MenuScreen() {
-  const [category, setCategory] = useState('Todos');
-  const [search, setSearch] = useState('');
-  const filtered = useMemo(() => products.filter((product) =>
-    (category === 'Todos' || product.category === category) && product.name.toLowerCase().includes(search.trim().toLowerCase())
-  ), [category, search]);
+export default function TelaCardapio() {
+  const [categoria, definirCategoria] = useState('Todos');
+  const [busca, definirBusca] = useState('');
+  const produtosFiltrados = useMemo(() => produtos.filter((produto) =>
+    (categoria === 'Todos' || produto.categoria === categoria) && produto.nome.toLowerCase().includes(busca.trim().toLowerCase())
+  ), [categoria, busca]);
 
   return <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
     <Text style={styles.title}>Nosso cardápio</Text>
-    <TextInput style={styles.search} value={search} onChangeText={setSearch} placeholder="Buscar pratos e bebidas..." placeholderTextColor="#9B8D83" />
+    <TextInput style={styles.search} value={busca} onChangeText={definirBusca} placeholder="Buscar pratos e bebidas..." placeholderTextColor="#9B8D83" />
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories}>
-      {categories.map((item) => <Pressable key={item} onPress={() => setCategory(item)} style={[styles.chip, category === item && styles.chipActive]}>
-        <Text style={[styles.chipText, category === item && styles.chipTextActive]}>{item}</Text>
+      {categorias.map((item) => <Pressable key={item} onPress={() => definirCategoria(item)} style={[styles.chip, categoria === item && styles.chipActive]}>
+        <Text style={[styles.chipText, categoria === item && styles.chipTextActive]}>{item}</Text>
       </Pressable>)}
     </ScrollView>
-    <View>{filtered.map((product) => <ProductCard key={product.id} product={product} />)}</View>
-    {!filtered.length && <Text style={styles.empty}>Nenhum item encontrado.</Text>}
+    <View>{produtosFiltrados.map((produto) => <CartaoProduto key={produto.id} produto={produto} />)}</View>
+    {!produtosFiltrados.length && <Text style={styles.empty}>Nenhum item encontrado.</Text>}
   </ScrollView>;
 }
 

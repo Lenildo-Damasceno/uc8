@@ -1,17 +1,17 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import CartaoProduto from '../components/ProductCard';
+import { produtos } from '../data/products';
 
-export default function HomeScreen({ onSeeMenu }) {
+export default function TelaInicio({ aoVerCardapio }) {
   return <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
     <View style={styles.hero}>
       <Text style={styles.eyebrow}>ENTREGA RÁPIDA</Text>
       <Text style={styles.title}>Comida gostosa,{`\n`}sem perder tempo.</Text>
       <Text style={styles.copy}>Escolha seu prato pronto e receba quentinho.</Text>
-      <Pressable style={styles.heroButton} onPress={onSeeMenu}><Text style={styles.heroButtonText}>Ver cardápio  →</Text></Pressable>
+      <Pressable style={styles.heroButton} onPress={aoVerCardapio}><Text style={styles.heroButtonText}>Ver cardápio  →</Text></Pressable>
     </View>
     <Text style={styles.sectionTitle}>Favoritos da casa</Text>
-    {products.filter((product) => product.featured).map((product) => <ProductCard key={product.id} product={product} />)}
+    {produtos.filter((produto) => produto.destaque).map((produto) => <CartaoProduto key={produto.id} produto={produto} />)}
   </ScrollView>;
 }
 

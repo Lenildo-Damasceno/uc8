@@ -1,29 +1,29 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useCart } from '../context/CartContext';
-import { formatCurrency } from '../utils/currency';
+import { usarCarrinho } from '../context/CartContext';
+import { formatarMoeda } from '../utils/currency';
 
-export default function CartScreen({ onContinue }) {
-  const { items, changeQuantity, clearCart, total } = useCart();
-  if (!items.length) return <View style={styles.emptyContainer}>
+export default function TelaCarrinho({ aoContinuar }) {
+  const { itens, alterarQuantidade, limparCarrinho, total } = usarCarrinho();
+  if (!itens.length) return <View style={styles.emptyContainer}>
     <Text style={styles.emptyIcon}>🛒</Text><Text style={styles.title}>Seu carrinho está vazio</Text>
     <Text style={styles.emptyText}>Adicione uma refeição deliciosa para continuar.</Text>
-    <Pressable style={styles.primaryButton} onPress={onContinue}><Text style={styles.primaryText}>Ver cardápio</Text></Pressable>
+    <Pressable style={styles.primaryButton} onPress={aoContinuar}><Text style={styles.primaryText}>Ver cardápio</Text></Pressable>
   </View>;
 
   return <ScrollView contentContainerStyle={styles.container}>
-    <View style={styles.heading}><Text style={styles.title}>Seu pedido</Text><Pressable onPress={clearCart}><Text style={styles.clear}>Limpar</Text></Pressable></View>
-    {items.map((item) => <View key={item.id} style={styles.item}>
-      <Text style={styles.emoji}>{item.emoji}</Text><View style={styles.itemInfo}><Text style={styles.itemName}>{item.name}</Text><Text style={styles.price}>{formatCurrency(item.price * item.quantity)}</Text></View>
-      <View style={styles.counter}><Pressable style={styles.counterButton} onPress={() => changeQuantity(item.id, -1)}><Text style={styles.counterText}>−</Text></Pressable>
-        <Text style={styles.quantity}>{item.quantity}</Text><Pressable style={styles.counterButton} onPress={() => changeQuantity(item.id, 1)}><Text style={styles.counterText}>+</Text></Pressable>
+    <View style={styles.heading}><Text style={styles.title}>Seu pedido</Text><Pressable onPress={limparCarrinho}><Text style={styles.clear}>Limpar</Text></Pressable></View>
+    {itens.map((item) => <View key={item.id} style={styles.item}>
+      <Text style={styles.emoji}>{item.emoji}</Text><View style={styles.itemInfo}><Text style={styles.itemName}>{item.nome}</Text><Text style={styles.price}>{formatarMoeda(item.preco * item.quantidade)}</Text></View>
+      <View style={styles.counter}><Pressable style={styles.counterButton} onPress={() => alterarQuantidade(item.id, -1)}><Text style={styles.counterText}>−</Text></Pressable>
+        <Text style={styles.quantity}>{item.quantidade}</Text><Pressable style={styles.counterButton} onPress={() => alterarQuantidade(item.id, 1)}><Text style={styles.counterText}>+</Text></Pressable>
       </View>
     </View>)}
     <View style={styles.summary}>
-      <View style={styles.summaryLine}><Text style={styles.muted}>Subtotal</Text><Text>{formatCurrency(total)}</Text></View>
+      <View style={styles.summaryLine}><Text style={styles.muted}>Subtotal</Text><Text>{formatarMoeda(total)}</Text></View>
       <View style={styles.summaryLine}><Text style={styles.muted}>Entrega</Text><Text style={styles.free}>Grátis</Text></View>
       <View style={styles.summaryLine}>
         <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.total}>{formatCurrency(total)}</Text>
+        <Text style={styles.total}>{formatarMoeda(total)}</Text>
       </View>
     </View>
     <Pressable style={styles.primaryButton}><Text style={styles.primaryText}>Finalizar pedido</Text></Pressable>
