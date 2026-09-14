@@ -1,59 +1,71 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-const STORAGE_KEY = '@readydish:cart';
-const CartContext = createContext(null);
+const CHAVE_ARMAZENAMENTO = '@readydish:cart';
+const ContextoCarrinho = createContext(null);
 
-export function CartProvider({ children }) {
-  const [items, setItems] = useState([]);
-  const [isReady, setIsReady] = useState(false);
+export function ProvedorCarrinho({ children }) {
+  const [itens, definirItens] = useState([]);
+  const [estaPronto, definirEstaPronto] = useState(false);
 
   useEffect(() => {
-    async function loadCart() {
+    async function carregarCarrinho() {
       try {
-        const savedCart = await AsyncStorage.getItem(STORAGE_KEY);
-        if (savedCart) setItems(JSON.parse(savedCart));
-      } catch (error) {
-        console.warn('Não foi possível carregar o carrinho.', error);
+        const carrinhoSalvo = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
+        if (carrinhoSalvo) {
+          const itensSalvos = JSON.parse(carrinhoSalvo);
+          definirItens(itensSalvos.map((item) => ({
+            id: item.id,
+            nome: item.nome ?? item.name,
+            descricao: item.descricao ?? item.description,
+            preco: item.preco ?? item.price,
+            categoria: item.categoria ?? item.category,
+            emoji: item.emoji,
+            destaque: item.destaque ?? item.featured,
+            quantidade: item.quantidade ?? item.quantity,
+          })));
+        }
+      } catch (erro) {
+        console.warn('Não foi possível carregar o carrinho.', erro);
       } finally {
-        setIsReady(true);
+        definirEstaPronto(true);
       }
     }
-    loadCart();
+    carregarCarrinho();
   }, []);
 
   useEffect(() => {
-    if (!isReady) return;
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items)).catch((error) =>
-      console.warn('Não foi possível salvar o carrinho.', error)
+    if (!estaPronto) return;
+    AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(itens)).catch((erro) =>
+      console.warn('Não foi possível salvar o carrinho.', erro)
     );
-  }, [items, isReady]);
+  }, [itens, estaPronto]);
 
-  function addItem(product) {
-    setItems((current) => {
-      const exists = current.find((item) => item.id === product.id);
-      if (exists) return current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-      return [...current, { ...product, quantity: 1 }];
+  function adicionarItem(produto) {
+    definirItens((itensAtuais) => {
+      const produtoExiste = itensAtuais.find((item) => item.id === produto.id);
+      if (produtoExiste) return itensAtuais.map((item) => item.id === produto.id ? { ...item, quantidade: item.quantidade + 1 } : item);
+      return [...itensAtuais, { ...produto, quantidade: 1 }];
     });
   }
 
-  function changeQuantity(id, amount) {
-    setItems((current) => current
-      .map((item) => item.id === id ? { ...item, quantity: item.quantity + amount } : item)
-      .filter((item) => item.quantity > 0));
+  function alterarQuantidade(id, valor) {
+    definirItens((itensAtuais) => itensAtuais
+      .map((item) => item.id === id ? { ...item, quantidade: item.quantidade + valor } : item)
+      .filter((item) => item.quantidade > 0));
   }
 
-  function clearCart() { setItems([]); }
+  function limparCarrinho() { definirItens([]); }
 
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const value = useMemo(() => ({ items, addItem, changeQuantity, clearCart, itemCount, total, isReady }), [items, itemCount, total, isReady]);
+  const quantidadeItens = itens.reduce((soma, item) => soma + item.quantidade, 0);
+  const total = itens.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
+  const valorContexto = useMemo(() => ({ itens, adicionarItem, alterarQuantidade, limparCarrinho, quantidadeItens, total, estaPronto }), [itens, quantidadeItens, total, estaPronto]);
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return <ContextoCarrinho.Provider value={valorContexto}>{children}</ContextoCarrinho.Provider>;
 }
 
-export function useCart() {
-  const context = useContext(CartContext);
-  if (!context) throw new Error('useCart deve ser usado dentro de CartProvider');
-  return context;
+export function usarCarrinho() {
+  const contexto = useContext(ContextoCarrinho);
+  if (!contexto) throw new Error('usarCarrinho deve ser usado dentro de ProvedorCarrinho');
+  return contexto;
 }
