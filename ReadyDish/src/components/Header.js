@@ -1,14 +1,14 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useCart } from '../context/CartContext';
+import { usarCarrinho } from '../context/CartContext';
 
-export default function Header({ onCartPress }) {
-  const { itemCount } = useCart();
+export default function Cabecalho({ aoPressionarCarrinho }) {
+  const { quantidadeItens } = usarCarrinho();
   return (
     <View style={styles.header}>
       <View><Text style={styles.brand}>ReadyDish</Text><Text style={styles.subtitle}>Pronto para matar a fome</Text></View>
-      <Pressable style={styles.cart} onPress={onCartPress} accessibilityLabel="Abrir carrinho">
+      <Pressable style={styles.cart} onPress={aoPressionarCarrinho} accessibilityLabel="Abrir carrinho">
         <Text style={styles.icon}>🛒</Text>
-        {itemCount > 0 && <Text style={styles.badge}>{itemCount}</Text>}
+        {quantidadeItens > 0 && <Text style={styles.badge}>{quantidadeItens}</Text>}
       </Pressable>
     </View>
   );

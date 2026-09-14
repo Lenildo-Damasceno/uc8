@@ -1,17 +1,17 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-const links = [
+const linksNavegacao = [
   { id: 'inicio', label: 'Início', icon: '🏠' },
   { id: 'cardapio', label: 'Cardápio', icon: '🍴' },
   { id: 'carrinho', label: 'Carrinho', icon: '🛒' },
 ];
 
-export default function BottomNav({ currentPage, onChange }) {
-  return <View style={styles.nav}>{links.map((link) => {
-    const active = currentPage === link.id;
-    return <Pressable key={link.id} style={styles.link} onPress={() => onChange(link.id)}>
-      <Text style={[styles.icon, active && styles.active]}>{link.icon}</Text>
-      <Text style={[styles.label, active && styles.active]}>{link.label}</Text>
+export default function NavegacaoInferior({ paginaAtual, aoMudar }) {
+  return <View style={styles.nav}>{linksNavegacao.map((link) => {
+    const estaAtivo = paginaAtual === link.id;
+    return <Pressable key={link.id} style={styles.link} onPress={() => aoMudar(link.id)}>
+      <Text style={[styles.icon, estaAtivo && styles.active]}>{link.icon}</Text>
+      <Text style={[styles.label, estaAtivo && styles.active]}>{link.label}</Text>
     </Pressable>;
   })}</View>;
 }

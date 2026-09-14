@@ -2,30 +2,30 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { CartProvider } from './src/context/CartContext';
-import Header from './src/components/Header';
-import BottomNav from './src/components/BottomNav';
-import HomeScreen from './src/screens/HomeScreen';
-import MenuScreen from './src/screens/MenuScreen';
-import CartScreen from './src/screens/CartScreen';
+import { ProvedorCarrinho } from './src/context/CartContext';
+import Cabecalho from './src/components/Header';
+import NavegacaoInferior from './src/components/BottomNav';
+import TelaInicio from './src/screens/HomeScreen';
+import TelaCardapio from './src/screens/MenuScreen';
+import TelaCarrinho from './src/screens/CartScreen';
 
-export default function App() {
-  const [page, setPage] = useState('inicio');
+export default function Aplicativo() {
+  const [pagina, definirPagina] = useState('inicio');
 
   return (
     <SafeAreaProvider>
-      <CartProvider>
+      <ProvedorCarrinho>
         <SafeAreaView style={styles.app} edges={['top', 'bottom']}>
           <StatusBar style="dark" backgroundColor="#FFF" />
-          <Header onCartPress={() => setPage('carrinho')} />
+          <Cabecalho aoPressionarCarrinho={() => definirPagina('carrinho')} />
           <View style={styles.content}>
-            {page === 'inicio' && <HomeScreen onSeeMenu={() => setPage('cardapio')} />}
-            {page === 'cardapio' && <MenuScreen />}
-            {page === 'carrinho' && <CartScreen onContinue={() => setPage('cardapio')} />}
+            {pagina === 'inicio' && <TelaInicio aoVerCardapio={() => definirPagina('cardapio')} />}
+            {pagina === 'cardapio' && <TelaCardapio />}
+            {pagina === 'carrinho' && <TelaCarrinho aoContinuar={() => definirPagina('cardapio')} />}
           </View>
-          <BottomNav currentPage={page} onChange={setPage} />
+          <NavegacaoInferior paginaAtual={pagina} aoMudar={definirPagina} />
         </SafeAreaView>
-      </CartProvider>
+      </ProvedorCarrinho>
     </SafeAreaProvider>
   );
 }

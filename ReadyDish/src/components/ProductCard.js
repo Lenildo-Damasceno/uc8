@@ -1,16 +1,16 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useCart } from '../context/CartContext';
-import { formatCurrency } from '../utils/currency';
+import { usarCarrinho } from '../context/CartContext';
+import { formatarMoeda } from '../utils/currency';
 
-export default function ProductCard({ product }) {
-  const { addItem } = useCart();
+export default function CartaoProduto({ produto }) {
+  const { adicionarItem } = usarCarrinho();
   return <View style={styles.card}>
-    <View style={styles.image}><Text style={styles.emoji}>{product.emoji}</Text></View>
+    <View style={styles.image}><Text style={styles.emoji}>{produto.emoji}</Text></View>
     <View style={styles.info}>
-      <Text style={styles.name}>{product.name}</Text>
-      <Text style={styles.description} numberOfLines={2}>{product.description}</Text>
-      <View style={styles.footer}><Text style={styles.price}>{formatCurrency(product.price)}</Text>
-        <Pressable style={styles.button} onPress={() => addItem(product)}><Text style={styles.buttonText}>Adicionar</Text></Pressable>
+      <Text style={styles.name}>{produto.nome}</Text>
+      <Text style={styles.description} numberOfLines={2}>{produto.descricao}</Text>
+      <View style={styles.footer}><Text style={styles.price}>{formatarMoeda(produto.preco)}</Text>
+        <Pressable style={styles.button} onPress={() => adicionarItem(produto)}><Text style={styles.buttonText}>Adicionar</Text></Pressable>
       </View>
     </View>
   </View>;
