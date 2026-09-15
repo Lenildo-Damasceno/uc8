@@ -12,10 +12,10 @@ export default function TelaCarrinho({ aoContinuar }) {
 
   return <ScrollView contentContainerStyle={styles.container}>
     <View style={styles.heading}><Text style={styles.title}>Seu pedido</Text><Pressable onPress={limparCarrinho}><Text style={styles.clear}>Limpar</Text></Pressable></View>
-    {itens.map((item) => <View key={item.id} style={styles.item}>
-      <Text style={styles.emoji}>{item.emoji}</Text><View style={styles.itemInfo}><Text style={styles.itemName}>{item.nome}</Text><Text style={styles.price}>{formatarMoeda(item.preco * item.quantidade)}</Text></View>
-      <View style={styles.counter}><Pressable style={styles.counterButton} onPress={() => alterarQuantidade(item.id, -1)}><Text style={styles.counterText}>−</Text></Pressable>
-        <Text style={styles.quantity}>{item.quantidade}</Text><Pressable style={styles.counterButton} onPress={() => alterarQuantidade(item.id, 1)}><Text style={styles.counterText}>+</Text></Pressable>
+    {itens.map((itemCarrinho) => <View key={itemCarrinho.id} style={styles.item}>
+      <Text style={styles.emoji}>{itemCarrinho.emoji}</Text><View style={styles.itemInfo}><Text style={styles.itemName}>{itemCarrinho.nome}</Text><Text style={styles.price}>{formatarMoeda(itemCarrinho.preco * itemCarrinho.quantidade)}</Text></View>
+      <View style={styles.counter}><Pressable style={styles.counterButton} onPress={() => alterarQuantidade(itemCarrinho.id, -1)}><Text style={styles.counterText}>−</Text></Pressable>
+        <Text style={styles.quantity}>{itemCarrinho.quantidade}</Text><Pressable style={styles.counterButton} onPress={() => alterarQuantidade(itemCarrinho.id, 1)}><Text style={styles.counterText}>+</Text></Pressable>
       </View>
     </View>)}
     <View style={styles.summary}>

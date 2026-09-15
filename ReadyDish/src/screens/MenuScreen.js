@@ -14,8 +14,8 @@ export default function TelaCardapio() {
     <Text style={styles.title}>Nosso cardápio</Text>
     <TextInput style={styles.search} value={busca} onChangeText={definirBusca} placeholder="Buscar pratos e bebidas..." placeholderTextColor="#9B8D83" />
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categories}>
-      {categorias.map((item) => <Pressable key={item} onPress={() => definirCategoria(item)} style={[styles.chip, categoria === item && styles.chipActive]}>
-        <Text style={[styles.chipText, categoria === item && styles.chipTextActive]}>{item}</Text>
+      {categorias.map((categoriaDisponivel) => <Pressable key={categoriaDisponivel} onPress={() => definirCategoria(categoriaDisponivel)} style={[styles.chip, categoria === categoriaDisponivel && styles.chipActive]}>
+        <Text style={[styles.chipText, categoria === categoriaDisponivel && styles.chipTextActive]}>{categoriaDisponivel}</Text>
       </Pressable>)}
     </ScrollView>
     <View>{produtosFiltrados.map((produto) => <CartaoProduto key={produto.id} produto={produto} />)}</View>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,6 +12,12 @@ import NovoAgendamento from './src/screens/NovoAgendamento';
 import Confirmacao from './src/screens/Confirmacao';
 import Contato from './src/screens/Contato';
 import useAuth, { AuthProvider } from './src/context/authContext';
+import {
+  abrirDB,
+  criarTabelas,
+  inserirUsuario,
+  visualizarTabelas,
+} from './src/database/database';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -75,6 +81,21 @@ function Rotas() {
 }
 
 export default function App() {
+  useEffect(() => {
+    async function inicializarBanco() {
+      try {
+        const db = await abrirDB();
+        await criarTabelas(db);
+        await inserirUsuario(db, 'Maria', 'maria@email.com', '123456');
+        await visualizarTabelas(db);
+      } catch (erro) {
+        console.error('Erro ao abrir o banco de dados:', erro);
+      }
+    }
+
+    inicializarBanco();
+  }, []);
+
   return (
     <AuthProvider>
       <Rotas />

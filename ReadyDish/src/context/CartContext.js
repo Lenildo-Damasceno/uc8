@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 const CHAVE_ARMAZENAMENTO = '@readydish:cart';
 const ContextoCarrinho = createContext(null);
 
-export function ProvedorCarrinho({ children }) {
+export function ProvedorCarrinho({ children: filhos }) {
   const [itens, definirItens] = useState([]);
   const [estaPronto, definirEstaPronto] = useState(false);
 
@@ -14,15 +14,15 @@ export function ProvedorCarrinho({ children }) {
         const carrinhoSalvo = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
         if (carrinhoSalvo) {
           const itensSalvos = JSON.parse(carrinhoSalvo);
-          definirItens(itensSalvos.map((item) => ({
-            id: item.id,
-            nome: item.nome ?? item.name,
-            descricao: item.descricao ?? item.description,
-            preco: item.preco ?? item.price,
-            categoria: item.categoria ?? item.category,
-            emoji: item.emoji,
-            destaque: item.destaque ?? item.featured,
-            quantidade: item.quantidade ?? item.quantity,
+          definirItens(itensSalvos.map((itemSalvo) => ({
+            id: itemSalvo.id,
+            nome: itemSalvo.nome ?? itemSalvo.name,
+            descricao: itemSalvo.descricao ?? itemSalvo.description,
+            preco: itemSalvo.preco ?? itemSalvo.price,
+            categoria: itemSalvo.categoria ?? itemSalvo.category,
+            emoji: itemSalvo.emoji,
+            destaque: itemSalvo.destaque ?? itemSalvo.featured,
+            quantidade: itemSalvo.quantidade ?? itemSalvo.quantity,
           })));
         }
       } catch (erro) {
@@ -43,25 +43,25 @@ export function ProvedorCarrinho({ children }) {
 
   function adicionarItem(produto) {
     definirItens((itensAtuais) => {
-      const produtoExiste = itensAtuais.find((item) => item.id === produto.id);
-      if (produtoExiste) return itensAtuais.map((item) => item.id === produto.id ? { ...item, quantidade: item.quantidade + 1 } : item);
+      const produtoExiste = itensAtuais.find((itemAtual) => itemAtual.id === produto.id);
+      if (produtoExiste) return itensAtuais.map((itemAtual) => itemAtual.id === produto.id ? { ...itemAtual, quantidade: itemAtual.quantidade + 1 } : itemAtual);
       return [...itensAtuais, { ...produto, quantidade: 1 }];
     });
   }
 
   function alterarQuantidade(id, valor) {
     definirItens((itensAtuais) => itensAtuais
-      .map((item) => item.id === id ? { ...item, quantidade: item.quantidade + valor } : item)
-      .filter((item) => item.quantidade > 0));
+      .map((itemAtual) => itemAtual.id === id ? { ...itemAtual, quantidade: itemAtual.quantidade + valor } : itemAtual)
+      .filter((itemAtual) => itemAtual.quantidade > 0));
   }
 
   function limparCarrinho() { definirItens([]); }
 
-  const quantidadeItens = itens.reduce((soma, item) => soma + item.quantidade, 0);
-  const total = itens.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
+  const quantidadeItens = itens.reduce((soma, itemAtual) => soma + itemAtual.quantidade, 0);
+  const total = itens.reduce((soma, itemAtual) => soma + itemAtual.preco * itemAtual.quantidade, 0);
   const valorContexto = useMemo(() => ({ itens, adicionarItem, alterarQuantidade, limparCarrinho, quantidadeItens, total, estaPronto }), [itens, quantidadeItens, total, estaPronto]);
 
-  return <ContextoCarrinho.Provider value={valorContexto}>{children}</ContextoCarrinho.Provider>;
+  return <ContextoCarrinho.Provider value={valorContexto}>{filhos}</ContextoCarrinho.Provider>;
 }
 
 export function usarCarrinho() {

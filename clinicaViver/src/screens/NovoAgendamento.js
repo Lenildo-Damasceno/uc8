@@ -15,9 +15,9 @@ export default function NovoAgendamento({ navigation }) {
     minute: '2-digit',
   }) ?? '';
 
-  function alterarDataHora(event, valorSelecionado) {
+  function alterarDataHora(_event, valorSelecionado) {
     if (Platform.OS === 'android') setSeletorAberto(null);
-    if (event.type === 'dismissed' || !valorSelecionado) return;
+    if (!valorSelecionado) return;
 
     if (seletorAberto === 'date') {
       setData(valorSelecionado);
@@ -67,7 +67,8 @@ export default function NovoAgendamento({ navigation }) {
           display="default"
           minimumDate={seletorAberto === 'date' ? new Date() : undefined}
           is24Hour
-          onChange={alterarDataHora}
+          onValueChange={alterarDataHora}
+          onDismiss={() => setSeletorAberto(null)}
         />
       )}
 

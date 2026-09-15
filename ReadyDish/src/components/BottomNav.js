@@ -1,17 +1,17 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const linksNavegacao = [
-  { id: 'inicio', label: 'Início', icon: '🏠' },
-  { id: 'cardapio', label: 'Cardápio', icon: '🍴' },
-  { id: 'carrinho', label: 'Carrinho', icon: '🛒' },
+  { identificador: 'inicio', rotulo: 'Início', icone: '🏠' },
+  { identificador: 'cardapio', rotulo: 'Cardápio', icone: '🍴' },
+  { identificador: 'carrinho', rotulo: 'Carrinho', icone: '🛒' },
 ];
 
 export default function NavegacaoInferior({ paginaAtual, aoMudar }) {
-  return <View style={styles.nav}>{linksNavegacao.map((link) => {
-    const estaAtivo = paginaAtual === link.id;
-    return <Pressable key={link.id} style={styles.link} onPress={() => aoMudar(link.id)}>
-      <Text style={[styles.icon, estaAtivo && styles.active]}>{link.icon}</Text>
-      <Text style={[styles.label, estaAtivo && styles.active]}>{link.label}</Text>
+  return <View style={styles.nav}>{linksNavegacao.map((linkNavegacao) => {
+    const estaAtivo = paginaAtual === linkNavegacao.identificador;
+    return <Pressable key={linkNavegacao.identificador} style={styles.link} onPress={() => aoMudar(linkNavegacao.identificador)}>
+      <Text style={[styles.icon, estaAtivo && styles.active]}>{linkNavegacao.icone}</Text>
+      <Text style={[styles.label, estaAtivo && styles.active]}>{linkNavegacao.rotulo}</Text>
     </Pressable>;
   })}</View>;
 }
