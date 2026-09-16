@@ -14,11 +14,8 @@ import Contato from './src/screens/Contato';
 import useAuth, { AuthProvider } from './src/context/authContext';
 import {
   abrirDB,
-  criarTabelas,
-  inserirUsuario,
   visualizarTabelas,
 } from './src/database/database';
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -85,8 +82,6 @@ export default function App() {
     async function inicializarBanco() {
       try {
         const db = await abrirDB();
-        await criarTabelas(db);
-        await inserirUsuario(db, 'Maria', 'maria@email.com', '123456');
         await visualizarTabelas(db);
       } catch (erro) {
         console.error('Erro ao abrir o banco de dados:', erro);

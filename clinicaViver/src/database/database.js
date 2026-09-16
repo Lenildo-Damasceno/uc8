@@ -1,5 +1,8 @@
 import * as SQLite from 'expo-sqlite';
 
+const NOME_BANCO = 'clinicaViver.db';
+let promessaBanco;
+
 async function criarTabelas(db) {
   try {
     await db.execAsync(`
@@ -52,39 +55,31 @@ async function criarTabelas(db) {
     `);
 
     console.log('Tabelas criadas com sucesso');
-    return true;
   } catch (erro) {
     console.error('Erro ao criar tabelas:', erro);
-    return false;
+    throw erro;
   }
 }
 
 
 
 async function abrirDB() {
-  const db = await SQLite.openDatabaseAsync('clinicaViver.db');
-  console.log('Banco de dados aberto com sucesso');
+  if (!promessaBanco) {
+    promessaBanco = (async () => {
+      const db = await SQLite.openDatabaseAsync(NOME_BANCO);
+      await db.execAsync('PRAGMA journal_mode = WAL;');
+      await criarTabelas(db);
 
-  return db;
-}
-
-async function inserirUsuario(db, nome, email, senha) {
-  try {
-    const resultado = await db.runAsync(
-      'INSERT OR IGNORE INTO usuarios (nome, email, senha) VALUES (?, ?, ?)',
-      nome,
-      email,
-      senha
-    );
-
-    if (resultado.changes > 0) {
-      console.log('Usuário inserido com sucesso. ID:', resultado.lastInsertRowId);
-    } else {
-      console.log('Usuário não inserido: o e-mail já está cadastrado');
-    }
-  } catch (erro) {
-    console.error('Erro ao inserir usuário:', erro);
+      console.log('Banco de dados aberto:', db.databasePath);
+      return db;
+    })().catch((erro) => {
+      // Permite tentar inicializar novamente caso a primeira abertura falhe.
+      promessaBanco = undefined;
+      throw erro;
+    });
   }
+
+  return promessaBanco;
 }
 
 async function visualizarTabelas(db) {
@@ -108,4 +103,4 @@ async function visualizarTabelas(db) {
   }
 }
 
-export { abrirDB, criarTabelas, inserirUsuario, visualizarTabelas };
+export { abrirDB, criarTabelas, visualizarTabelas };

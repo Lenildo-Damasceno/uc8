@@ -30,8 +30,6 @@ export default function Login({ navigation }) {
       <TextInput placeholder="Digite sua senha" value={senha} onChangeText={setSenha} secureTextEntry />
       <Button title="Entrar" onPress={entrar} />
       <Button title="Cadastre-se" onPress={() => navigation.navigate('Cadastro')} />
-
-        cadatra-se 
     </View>
   );
 }

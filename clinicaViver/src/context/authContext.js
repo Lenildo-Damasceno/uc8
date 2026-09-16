@@ -1,8 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  inserirUsuario,
+  buscarUsuarioPorEmailESenha,
+} from '../repository/RepoUsuario';
 
 const CHAVE_SESSAO = '@clinicaViver:sessao';
-const CHAVE_CONTAS = '@clinicaViver:contas';
 
 export const AuthContext = createContext(null);
 
@@ -25,39 +28,46 @@ export function AuthProvider({ children }) {
     restaurarSessao();
   }, []);
 
-  async function cadastrar(nome, email, senha) {
-    const emailNormalizado = email.trim().toLowerCase();
-    const contasSalvas = await AsyncStorage.getItem(CHAVE_CONTAS);
-    const contas = contasSalvas ? JSON.parse(contasSalvas) : [];
+ async function cadastrar(nome, email, senha) {
+  try {
+    const usuario = await inserirUsuario(nome, email, senha);
 
-    if (contas.some((conta) => conta.email === emailNormalizado)) {
+    const sessao = {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+    };
+
+    await AsyncStorage.setItem(CHAVE_SESSAO, JSON.stringify(sessao));
+    setUser(sessao);
+  } catch (erro) {
+    if (
+      erro.message.includes('UNIQUE') ||
+      erro.message.includes('constraint')
+    ) {
       throw new Error('Este e-mail já está cadastrado.');
     }
 
-    const novaConta = { nome: nome.trim(), email: emailNormalizado, senha };
-    const sessao = { nome: novaConta.nome, email: novaConta.email };
+    throw erro;
+  }
+}
 
-    await AsyncStorage.setItem(CHAVE_CONTAS, JSON.stringify([...contas, novaConta]));
-    await AsyncStorage.setItem(CHAVE_SESSAO, JSON.stringify(sessao));
-    setUser(sessao);
+ async function entrar(email, senha) {
+  const usuario = await buscarUsuarioPorEmailESenha(email, senha);
+
+  if (!usuario) {
+    throw new Error('E-mail ou senha inválidos.');
   }
 
-  async function entrar(email, senha) {
-    const emailNormalizado = email.trim().toLowerCase();
-    const contasSalvas = await AsyncStorage.getItem(CHAVE_CONTAS);
-    const contas = contasSalvas ? JSON.parse(contasSalvas) : [];
-    const conta = contas.find(
-      (item) => item.email === emailNormalizado && item.senha === senha,
-    );
+  const sessao = {
+    id: usuario.id,
+    nome: usuario.nome,
+    email: usuario.email,
+  };
 
-    if (!conta) {
-      throw new Error('E-mail ou senha inválidos.');
-    }
-
-    const sessao = { nome: conta.nome, email: conta.email };
-    await AsyncStorage.setItem(CHAVE_SESSAO, JSON.stringify(sessao));
-    setUser(sessao);
-  }
+  await AsyncStorage.setItem(CHAVE_SESSAO, JSON.stringify(sessao));
+  setUser(sessao);
+}
 
   async function sair() {
     await AsyncStorage.removeItem(CHAVE_SESSAO);
