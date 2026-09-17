@@ -1,8 +1,11 @@
 import * as SQLite from 'expo-sqlite';
 
+// Arquivo SQLite persistido no dispositivo pelo expo-sqlite.
 const NOME_BANCO = 'readyDish.db';
+// Reutiliza a mesma abertura do banco em chamadas simultaneas.
 let promessaBanco;
 
+// Cria as tabelas na primeira abertura; IF NOT EXISTS preserva os dados existentes.
 async function criarTabelas(db) {
   try {
     await db.execAsync(`
@@ -33,10 +36,12 @@ async function criarTabelas(db) {
   }
 }
 
+// Abre o banco e garante que as tabelas existam antes de qualquer consulta.
 async function abrirDB() {
   if (!promessaBanco) {
     promessaBanco = (async () => {
       const db = await SQLite.openDatabaseAsync(NOME_BANCO);
+      // WAL permite leituras e escritas com menos bloqueios.
       await db.execAsync('PRAGMA journal_mode = WAL;');
       await criarTabelas(db);
 
@@ -51,6 +56,7 @@ async function abrirDB() {
   return promessaBanco;
 }
 
+// Consulta as tabelas e imprime seus registros no console para depuracao.
 async function visualizarTabelas(db) {
   try {
     const tabelas = await db.getAllAsync(`

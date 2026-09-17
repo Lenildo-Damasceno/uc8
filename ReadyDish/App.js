@@ -10,13 +10,14 @@ import TelaCardapio from './src/screens/MenuScreen';
 import TelaCarrinho from './src/screens/CartScreen';
 import GerenciarPratos from './src/screens/GerenciarPratos';
 import { abrirDB, visualizarTabelas } from './src/database/database';
-import { listarPratos, preencherPratosIniciais } from './src/repository/RepoPrato';
-import { produtos as pratosIniciais } from './src/data/products';
+import { listarPratos } from './src/repository/RepoPrato';
 
 export default function Aplicativo() {
   const [pagina, definirPagina] = useState('inicio');
+  // Guarda temporariamente na tela o resultado da consulta; o banco e a fonte dos dados.
   const [produtos, definirProdutos] = useState([]);
 
+  // Le os pratos persistidos e atualiza o cardapio exibido.
   async function carregarProdutos() {
     const pratos = await listarPratos();
     definirProdutos(pratos);
@@ -25,8 +26,8 @@ export default function Aplicativo() {
   useEffect(() => {
     async function inicializarBanco() {
       try {
+        // Abre o SQLite, cria as tabelas se necessario e carrega os pratos.
         const db = await abrirDB();
-        await preencherPratosIniciais(pratosIniciais);
         await visualizarTabelas(db);
         await carregarProdutos();
       } catch (erro) {

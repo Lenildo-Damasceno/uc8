@@ -13,10 +13,12 @@ const estadoInicial = {
 };
 
 export default function GerenciarPratos({ aoVoltar, aoAtualizarCardapio }) {
+  // Lista em memoria para renderizar a tela; os registros permanentes ficam no SQLite.
   const [pratos, definirPratos] = useState([]);
   const [formulario, definirFormulario] = useState(estadoInicial);
   const [salvando, definirSalvando] = useState(false);
 
+  // Busca novamente no banco e sincroniza a lista e o cardapio.
   async function carregarPratos() {
     const dados = await listarPratos();
     definirPratos(dados);
@@ -58,12 +60,14 @@ export default function GerenciarPratos({ aoVoltar, aoAtualizarCardapio }) {
     try {
       definirSalvando(true);
 
+      // Com id, altera o registro existente; sem id, insere um novo prato.
       if (formulario.id) {
         await editarPrato(formulario.id, formulario);
       } else {
         await inserirPrato(formulario);
       }
 
+      // Consulta o banco novamente para mostrar o dado que acabou de ser salvo.
       await carregarPratos();
       limparFormulario();
     } catch (erro) {
@@ -82,6 +86,7 @@ export default function GerenciarPratos({ aoVoltar, aoAtualizarCardapio }) {
         style: 'destructive',
         onPress: async () => {
           try {
+            // Exclui no SQLite e depois recarrega a lista exibida.
             await deletarPrato(prato.id);
             await carregarPratos();
             if (formulario.id === prato.id) {

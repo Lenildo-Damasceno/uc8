@@ -1,9 +1,10 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import CartaoProduto from '../components/ProductCard';
 
 export default function TelaInicio({ aoVerCardapio, produtos = [] }) {
   return <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
     <View style={styles.hero}>
+      <Image source={require('../../assets/logo.png')} style={styles.logo} resizeMode="contain" accessibilityLabel="Logo ReadyDish" />
       <Text style={styles.eyebrow}>ENTREGA RÁPIDA</Text>
       <Text style={styles.title}>Comida gostosa,{`\n`}sem perder tempo.</Text>
       <Text style={styles.copy}>Escolha seu prato pronto e receba quentinho.</Text>
@@ -16,6 +17,7 @@ export default function TelaInicio({ aoVerCardapio, produtos = [] }) {
 
 const styles = StyleSheet.create({
   container: { padding: 20, paddingBottom: 30 }, hero: { backgroundColor: '#25352D', borderRadius: 24, padding: 24, marginBottom: 26 },
+  logo: { width: 180, height: 94, alignSelf: 'center', marginBottom: 10 },
   eyebrow: { color: '#F2B36D', fontSize: 11, fontWeight: '800', letterSpacing: 1.4 },
   title: { color: '#FFF', fontSize: 29, lineHeight: 36, fontWeight: '800', marginTop: 8 },
   copy: { color: '#D6DED9', marginTop: 10, lineHeight: 20 },

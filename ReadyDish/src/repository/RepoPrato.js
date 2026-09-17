@@ -1,5 +1,6 @@
 import { abrirDB } from '../database/database';
 
+// Busca os pratos gravados no SQLite; getAllAsync devolve todas as linhas.
 export async function listarPratos() {
   const db = await abrirDB();
 
@@ -9,12 +10,14 @@ export async function listarPratos() {
      ORDER BY destaque DESC, nome ASC`
   );
 
+  // SQLite guarda destaque como 0 ou 1; a interface usa false ou true.
   return pratos.map((prato) => ({
     ...prato,
     destaque: Boolean(prato.destaque),
   }));
 }
 
+// Recebe os dados do formulario e grava um novo registro na tabela pratos.
 export async function inserirPrato(prato) {
   const db = await abrirDB();
   const nomeTratado = prato.nome.trim();
@@ -24,6 +27,7 @@ export async function inserirPrato(prato) {
   const destaqueTratado = prato.destaque ? 1 : 0;
   const precoTratado = Number(String(prato.preco).replace(',', '.'));
 
+  // Os ? recebem os valores abaixo, na ordem das colunas, sem montar SQL com texto do usuario.
   const resultado = await db.runAsync(
     `INSERT INTO pratos (nome, descricao, preco, categoria, emoji, destaque)
      VALUES (?, ?, ?, ?, ?, ?)`,
@@ -35,6 +39,7 @@ export async function inserirPrato(prato) {
     destaqueTratado
   );
 
+  // O banco gera o id automaticamente; ele vem em lastInsertRowId.
   return {
     id: resultado.lastInsertRowId,
     nome: nomeTratado,
@@ -46,6 +51,7 @@ export async function inserirPrato(prato) {
   };
 }
 
+// Atualiza apenas o prato identificado pelo id.
 export async function editarPrato(id, prato) {
   const db = await abrirDB();
   const nomeTratado = prato.nome.trim();
@@ -79,6 +85,7 @@ export async function editarPrato(id, prato) {
   };
 }
 
+// Remove do banco apenas o registro com este id.
 export async function deletarPrato(id) {
   const db = await abrirDB();
 
@@ -87,30 +94,4 @@ export async function deletarPrato(id) {
      WHERE id = ?`,
     id
   );
-}
-
-export async function preencherPratosIniciais(pratosIniciais) {
-  const db = await abrirDB();
-  const quantidade = await db.getFirstAsync(
-    `SELECT COUNT(*) AS total
-     FROM pratos`
-  );
-
-  if (quantidade?.total > 0) {
-    return;
-  }
-
-  for (const prato of pratosIniciais) {
-    await db.runAsync(
-      `INSERT INTO pratos (id, nome, descricao, preco, categoria, emoji, destaque)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      Number(prato.id),
-      prato.nome,
-      prato.descricao,
-      prato.preco,
-      prato.categoria,
-      prato.emoji,
-      prato.destaque ? 1 : 0
-    );
-  }
 }
