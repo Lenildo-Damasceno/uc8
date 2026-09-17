@@ -1,7 +1,7 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { usarCarrinho } from '../context/CartContext';
 
-export default function Cabecalho({ aoPressionarCarrinho, aoPressionarGerenciar }) {
+export default function Cabecalho({ aoPressionarCarrinho, aoPressionarGerenciar, aoSair }) {
   const { quantidadeItens } = usarCarrinho();
   return (
     <View style={styles.header}>
@@ -10,6 +10,9 @@ export default function Cabecalho({ aoPressionarCarrinho, aoPressionarGerenciar 
         <Text style={styles.subtitle}>Pronto para matar a fome</Text>
       </View>
       <View style={styles.actions}>
+        <Pressable onPress={aoSair} accessibilityLabel="Sair da conta">
+          <Text style={styles.manageTextDark}>Sair</Text>
+        </Pressable>
         {aoPressionarGerenciar && (
           <Pressable style={styles.manage} onPress={aoPressionarGerenciar} accessibilityLabel="Abrir gerenciamento de pratos">
             <Text style={styles.manageText}>Gerenciar</Text>
@@ -32,6 +35,7 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   manage: { paddingHorizontal: 12, height: 36, borderRadius: 18, backgroundColor: '#25352D', alignItems: 'center', justifyContent: 'center' },
   manageText: { color: '#FFF', fontSize: 12, fontWeight: '800' },
+  manageTextDark: { color: '#25352D', fontSize: 12, fontWeight: '800' },
   cart: { width: 46, height: 46, borderRadius: 23, backgroundColor: '#FFF0E7', alignItems: 'center', justifyContent: 'center' },
   icon: { fontSize: 21 },
   badge: { position: 'absolute', top: -3, right: -2, backgroundColor: '#D94F30', color: '#FFF', minWidth: 20, height: 20, borderRadius: 10, textAlign: 'center', fontSize: 12, fontWeight: '700', lineHeight: 20 },

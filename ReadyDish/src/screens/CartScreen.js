@@ -1,9 +1,29 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { usarCarrinho } from '../context/CartContext';
+import useAuth from '../context/authContext';
+import { inserirPedido } from '../repository/RepoPedido';
 import { formatarMoeda } from '../utils/currency';
 
 export default function TelaCarrinho({ aoContinuar }) {
   const { itens, alterarQuantidade, limparCarrinho, total } = usarCarrinho();
+  const { user } = useAuth();
+  const [finalizando, setFinalizando] = useState(false);
+
+  async function finalizarPedido() {
+    if (finalizando || !itens.length) return;
+    try {
+      setFinalizando(true);
+      const idPedido = await inserirPedido(user.nome, itens, total);
+      limparCarrinho();
+      Alert.alert('Pedido realizado', `Seu pedido #${idPedido} foi registrado com sucesso.`);
+    } catch (erro) {
+      console.error('Erro ao finalizar pedido:', erro);
+      Alert.alert('Não foi possível finalizar', 'Tente novamente em alguns instantes.');
+    } finally {
+      setFinalizando(false);
+    }
+  }
   if (!itens.length) return <View style={styles.emptyContainer}>
     <Text style={styles.emptyIcon}>🛒</Text><Text style={styles.title}>Seu carrinho está vazio</Text>
     <Text style={styles.emptyText}>Adicione uma refeição deliciosa para continuar.</Text>
@@ -26,7 +46,7 @@ export default function TelaCarrinho({ aoContinuar }) {
         <Text style={styles.total}>{formatarMoeda(total)}</Text>
       </View>
     </View>
-    <Pressable style={styles.primaryButton}><Text style={styles.primaryText}>Finalizar pedido</Text></Pressable>
+    <Pressable style={styles.primaryButton} onPress={finalizarPedido} disabled={finalizando}><Text style={styles.primaryText}>{finalizando ? 'Finalizando...' : 'Finalizar pedido'}</Text></Pressable>
   </ScrollView>;
 }
 

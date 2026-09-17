@@ -27,6 +27,13 @@ async function criarTabelas(db) {
         status TEXT NOT NULL,
         criado_em TEXT NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        senha TEXT NOT NULL
+      );
     `);
 
     console.log('Tabelas criadas com sucesso');
@@ -69,6 +76,7 @@ async function visualizarTabelas(db) {
     console.log('Tabelas existentes:', tabelas.map((tabela) => tabela.name));
 
     for (const tabela of tabelas) {
+      if (tabela.name === 'usuarios') continue;
       const nomeSeguro = tabela.name.replaceAll('"', '""');
       const dados = await db.getAllAsync(`SELECT * FROM "${nomeSeguro}"`);
       console.log(`Dados da tabela ${tabela.name}:`, dados);

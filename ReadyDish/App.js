@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ProvedorCarrinho } from './src/context/CartContext';
@@ -11,8 +11,11 @@ import TelaCarrinho from './src/screens/CartScreen';
 import GerenciarPratos from './src/screens/GerenciarPratos';
 import { abrirDB, visualizarTabelas } from './src/database/database';
 import { listarPratos } from './src/repository/RepoPrato';
+import useAuth, { AuthProvider } from './src/context/authContext';
+import Acesso from './src/screens/Acesso';
 
-export default function Aplicativo() {
+function Conteudo() {
+  const { user, carregando, sair } = useAuth();
   const [pagina, definirPagina] = useState('inicio');
   // Guarda temporariamente na tela o resultado da consulta; o banco e a fonte dos dados.
   const [produtos, definirProdutos] = useState([]);
@@ -40,10 +43,11 @@ export default function Aplicativo() {
 
   return (
     <SafeAreaProvider>
-      <ProvedorCarrinho>
+      {carregando ? <ActivityIndicator style={{ flex: 1 }} size="large" /> : !user ? <Acesso /> : <ProvedorCarrinho>
         <SafeAreaView style={styles.app} edges={['top', 'bottom']}>
           <StatusBar style="dark" backgroundColor="#FFF" />
           <Cabecalho
+            aoSair={sair}
             aoPressionarCarrinho={() => definirPagina('carrinho')}
             aoPressionarGerenciar={() => definirPagina('gerenciar')}
           />
@@ -60,9 +64,13 @@ export default function Aplicativo() {
           </View>
           <NavegacaoInferior paginaAtual={pagina} aoMudar={definirPagina} />
         </SafeAreaView>
-      </ProvedorCarrinho>
+      </ProvedorCarrinho>}
     </SafeAreaProvider>
   );
+}
+
+export default function Aplicativo() {
+  return <AuthProvider><Conteudo /></AuthProvider>;
 }
 
 const styles = StyleSheet.create({
