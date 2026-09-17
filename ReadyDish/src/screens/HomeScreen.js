@@ -1,8 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import CartaoProduto from '../components/ProductCard';
-import { produtos } from '../data/products';
 
-export default function TelaInicio({ aoVerCardapio }) {
+export default function TelaInicio({ aoVerCardapio, produtos = [] }) {
   return <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
     <View style={styles.hero}>
       <Text style={styles.eyebrow}>ENTREGA RÁPIDA</Text>

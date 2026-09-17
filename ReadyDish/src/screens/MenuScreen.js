@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import CartaoProduto from '../components/ProductCard';
-import { categorias, produtos } from '../data/products';
 
-export default function TelaCardapio() {
+export default function TelaCardapio({ produtos = [] }) {
   const [categoria, definirCategoria] = useState('Todos');
   const [busca, definirBusca] = useState('');
+  const categorias = useMemo(() => ['Todos', ...new Set(produtos.map((produto) => produto.categoria))], [produtos]);
   const produtosFiltrados = useMemo(() => produtos.filter((produto) =>
     (categoria === 'Todos' || produto.categoria === categoria) && produto.nome.toLowerCase().includes(busca.trim().toLowerCase())
-  ), [categoria, busca]);
+  ), [categoria, busca, produtos]);
 
   return <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
     <Text style={styles.title}>Nosso cardápio</Text>

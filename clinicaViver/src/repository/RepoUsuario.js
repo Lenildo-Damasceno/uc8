@@ -34,3 +34,50 @@ export async function buscarUsuarioPorEmailESenha(email, senha) {
 
   return usuario;
 }
+
+
+export async function atualizarUsuario(id, nome, email, senha) {
+  const db = await abrirDB();
+try{
+    await db.runAsync(
+      `UPDATE usuarios
+       SET nome = ?, email = ?, senha = ?
+       WHERE id = ?`,
+      nome.trim(),
+      email.trim().toLowerCase(),
+      senha,
+      id
+    );
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+  }
+  const nomeTratado = nome.trim();
+  const emailTratado = email.trim().toLowerCase();
+
+  await db.runAsync(
+    `UPDATE usuarios
+     SET nome = ?, email = ?, senha = ?
+     WHERE id = ?`,
+    nomeTratado,
+    emailTratado,
+    senha,
+    id,
+  );
+
+  return {
+    id: id,
+    nome: nomeTratado,
+    email: emailTratado,
+  };
+}
+
+
+export async function deletarUsuario(id) {
+  const db = await abrirDB();
+
+  await db.runAsync(
+    `DELETE FROM usuarios
+     WHERE id = ?`,
+    id,
+  );
+} 

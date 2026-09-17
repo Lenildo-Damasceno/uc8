@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -8,20 +8,54 @@ import NavegacaoInferior from './src/components/BottomNav';
 import TelaInicio from './src/screens/HomeScreen';
 import TelaCardapio from './src/screens/MenuScreen';
 import TelaCarrinho from './src/screens/CartScreen';
+import GerenciarPratos from './src/screens/GerenciarPratos';
+import { abrirDB, visualizarTabelas } from './src/database/database';
+import { listarPratos, preencherPratosIniciais } from './src/repository/RepoPrato';
+import { produtos as pratosIniciais } from './src/data/products';
 
 export default function Aplicativo() {
   const [pagina, definirPagina] = useState('inicio');
+  const [produtos, definirProdutos] = useState([]);
+
+  async function carregarProdutos() {
+    const pratos = await listarPratos();
+    definirProdutos(pratos);
+  }
+
+  useEffect(() => {
+    async function inicializarBanco() {
+      try {
+        const db = await abrirDB();
+        await preencherPratosIniciais(pratosIniciais);
+        await visualizarTabelas(db);
+        await carregarProdutos();
+      } catch (erro) {
+        console.error('Erro ao abrir o banco de dados:', erro);
+      }
+    }
+
+    inicializarBanco();
+  }, []);
 
   return (
     <SafeAreaProvider>
       <ProvedorCarrinho>
         <SafeAreaView style={styles.app} edges={['top', 'bottom']}>
           <StatusBar style="dark" backgroundColor="#FFF" />
-          <Cabecalho aoPressionarCarrinho={() => definirPagina('carrinho')} />
+          <Cabecalho
+            aoPressionarCarrinho={() => definirPagina('carrinho')}
+            aoPressionarGerenciar={() => definirPagina('gerenciar')}
+          />
           <View style={styles.content}>
-            {pagina === 'inicio' && <TelaInicio aoVerCardapio={() => definirPagina('cardapio')} />}
-            {pagina === 'cardapio' && <TelaCardapio />}
+            {pagina === 'inicio' && <TelaInicio aoVerCardapio={() => definirPagina('cardapio')} produtos={produtos} />}
+            {pagina === 'cardapio' && <TelaCardapio produtos={produtos} />}
             {pagina === 'carrinho' && <TelaCarrinho aoContinuar={() => definirPagina('cardapio')} />}
+            {pagina === 'gerenciar' && (
+              <GerenciarPratos
+                aoVoltar={() => definirPagina('inicio')}
+                aoAtualizarCardapio={(pratosAtualizados) => definirProdutos(pratosAtualizados)}
+              />
+            )}
           </View>
           <NavegacaoInferior paginaAtual={pagina} aoMudar={definirPagina} />
         </SafeAreaView>

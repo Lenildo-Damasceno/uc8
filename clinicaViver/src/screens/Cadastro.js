@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Alert, Button, Text, TextInput, View } from 'react-native';
 import useAuth from '../context/authContext';
 
+
 export default function Cadastro({ navigation }) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
